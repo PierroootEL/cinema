@@ -112,14 +112,16 @@ int main(int argc, char *argv[]) {
                 sprintf(i_str, "%d", i);
                 sleep(creation_time);
                 creation_time -= 1;
-                execl("caisse", "caisse", shmid_str, semid_str, i_str, NULL);
+                execl("caisse", "caisse", shmid_str, semid_str, i_str, nom_film_cinema, NULL);
             }
             sleep(1);
         }
 
     }
 
-    waitpid(caisses[nombre_caisses_cinema], 0, 0);
+    for (i = 1; i <= nombre_caisses_cinema; i++) {
+        waitpid(caisses[i], 0, 0);
+    }
     printf("Fin du programme, la séance est complète ! \n");
     return 0;
 }

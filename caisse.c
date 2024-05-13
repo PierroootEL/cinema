@@ -23,7 +23,7 @@ extern int V();
 bool reste_des_places=2;
 int nb_place_achetees = 999999;
 
-int acheter_une_place(int *mem, int semid, int caisse_id) {
+int acheter_une_place(int *mem, int semid, int caisse_id, char * nom_film) {
     /* On protège l'accès à la shm */
     /* Reste-t-il des places libres ? */
     if (*mem > 0) {
@@ -31,11 +31,11 @@ int acheter_une_place(int *mem, int semid, int caisse_id) {
         while (((*mem - nb_place_achetees) < 0) || (nb_place_achetees == 0)){
             nb_place_achetees = rand() % 7;
         }
-        printf("%d place(s) vendue à la caisse %d, il reste désormais %d place(s) \n", nb_place_achetees, caisse_id, *mem);
+        printf("%d place(s) vendue pour %s à la caisse %d, il reste désormais %d place(s) \n", nb_place_achetees, nom_film, caisse_id, *mem);
         reste_des_places = 2;
         *mem = (*mem-nb_place_achetees);
     }else if(*mem == 0){
-        printf("La dernière place a été vendue à la caisse %d \n", caisse_id);
+        printf("La dernière place pour %s a été vendue à la caisse %d \n", nom_film, caisse_id);
         reste_des_places = 1;
         *mem = -1;
     }else {
@@ -61,13 +61,14 @@ int main(int argc, char *argv[]) {
     int shmid=atoi(argv[1]);
     int semid=atoi(argv[2]);
     int caisseid=atoi(argv[3]);
+    char * nom_film = argv[4];
 
     int *mem;
     int rand_int = 1;
 
     mem=attacher_segment_memoire(mem, &shmid);
     srand(time(0) ^ getpid());
-    while(acheter_une_place(mem, semid, caisseid) != 0) {
+    while(acheter_une_place(mem, semid, caisseid, nom_film) != 0) {
         rand_int = rand() % 3;
         while(rand_int <= 1){
             rand_int = rand() % 3;
